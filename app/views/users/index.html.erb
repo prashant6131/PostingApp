@@ -1,0 +1,66 @@
+<div class="heading-plus-container">
+  <h1 class="heading-title">Create your own post</h1>
+  <span class="separator">-</span>
+  <button class="custom-plus-button" onclick="togglePostForm()">
+    <i class="fa-solid fa-plus custom-plus-icon"></i>
+  </button>
+</div>
+
+<!-- Hidden Post Form Partial -->
+<div id="post-form-section" style="display:none; margin-top: 20px;">
+  <%= render 'posts/form' %> <!-- This renders the form partial -->
+</div>
+<div class="posts-container">
+  <h2>Posts</h2>
+  <ul class="posts-list">
+    <% @posts.each do |post| %>
+      <li class="post-card">
+        <strong><%= post.title %></strong>: <%= post.text %> - <%= post.user.email %>
+
+        <div class="post-actions">
+          <span class="likes-count"><%= pluralize(post.likes.count, 'Like') %></span>
+          
+          <% if current_user.liked_posts.include?(post) %>
+            <%= button_to post_like_path(post), method: :delete, class: 'btn btn-unlike' do %>
+                <i class="fa-solid fa-heart fa-rotate-by" style="color: #c94646; --fa-rotate-angle: 0deg;"></i>
+            <% end %>
+          <% else %>
+            <%= button_to post_like_path(post), method: :post, class: 'btn btn-like' do %>
+                <i class="fa-regular fa-heart" style="color: #3465a4;"></i> 
+            <% end %>
+          <% end %>
+
+          <button class="btn btn-comments" onclick="toggleComments(<%= post.id %>)">Comments</button>
+
+          <!-- Comments Section -->
+          <div id="comments-section-<%= post.id %>" style="display:none;">
+            <h3>Comments</h3>
+            <ul id="comments-list-<%= post.id %>">
+              <% post.comments.each do |comment| %>
+                <li><%= comment.description %> - <%= comment.user.email %></li>
+              <% end %>
+            </ul>
+
+            <!-- Render the comment form partial -->
+            <%= render 'comments/comment_form', post: post %>
+          </div>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+</div>
+
+
+
+<script>
+  function toggleComments(postId) {
+    const commentsSection = document.getElementById(`comments-section-${postId}`);
+    commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+  }
+
+  // Function to toggle the post form visibility
+  function togglePostForm() {
+    const postFormSection = document.getElementById('post-form-section');
+    postFormSection.style.display = postFormSection.style.display === 'none' ? 'block' : 'none';
+  }
+</script>
