@@ -6,6 +6,7 @@ class PostsController < ApplicationController
     @post.user = current_user
 
     if @post.save
+      
       redirect_to users_path, notice: 'Post was successfully created.'
     else
       flash[:alert] = @post.errors.full_messages.to_sentence
